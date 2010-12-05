@@ -1,0 +1,27 @@
+top = '.'
+out = '../build'
+  
+def build(bld):
+  bld.objects(
+    source            = 'anet.c',
+    includes          = '.',
+    cflags            = '-O3 -Wall',
+    target            = 'C_OBJS'
+  )
+  bld.objects(
+    source            = 'connection.cpp mime_types.cpp reply.cpp request_handler.cpp router.cpp request_parser.cpp server.cpp signals.cpp',
+    includes          = '.',
+    cxxflags          = '-O3 -Wall',
+    target            = 'CXX_OBJS'
+  )
+  bld.program(
+    source            = 'main.cpp',
+    includes          = '.',
+    target            = '../zest',
+    vnum              = '0.0.1',
+    use               = 'PTHREAD BOOST BOOST_DATE_TIME BOOST_FILESYSTEM BOOST_LOG '
+                      + 'BOOST_PROGRAM_OPTIONS BOOST_REGEX '
+                      + 'BOOST_SERIALIZATION BOOST_SYSTEM BOOST_THREAD BOOST_THREAD_MT C_OBJS CXX_OBJS',
+    cflags            = '-O2 -Wall',
+    cxxflags          = '-O3 -Wall'
+  )
