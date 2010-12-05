@@ -7,15 +7,16 @@
 //
 //..............................................................................
 
-#include <boost/lexical_cast.hpp>
-#include "mime_types.hpp"
 #include "router.hpp"
-#include "reply.hpp"
-#include "request.hpp"
 #include "signals.hpp"
 
 namespace zest {
 namespace server {
+
+void router::map(route_ptr r)
+{
+  
+}
 
 void router::process(const request& req, reply& rep)
 {
@@ -26,24 +27,24 @@ void router::process(const request& req, reply& rep)
     rep = reply::stock_reply(reply::bad_request);
     return;
   }
-
-  // Determine the file extension.
-  std::size_t last_slash_pos = request_path.find_last_of("/");
-  std::size_t last_dot_pos = request_path.find_last_of(".");
-  std::string extension;
-  if (last_dot_pos != std::string::npos && last_dot_pos > last_slash_pos)
-  {
-    extension = request_path.substr(last_dot_pos + 1);
-  }
-
-  rep.content = "Hello, World!";
-    
-  rep.headers.resize(2);
-  rep.headers[0].name = "Content-Length";
-  rep.headers[0].value = boost::lexical_cast<std::string>(rep.content.size());
-  rep.headers[1].name = "Content-Type";
-  rep.headers[1].value = mime_types::extension_to_type(extension);
   
+  routes_itr itr = routes_.begin();
+  routes_itr end = routes_.end();
+  
+  while(itr != end)
+  {
+    route_ptr r = *itr;
+    if(r->match(request_path))
+    {
+      route_sig(r, req, rep);
+      return;
+    }
+  
+    ++itr;
+  }
+  
+  // Didn't find a matching pattern.
+  rep = reply::stock_reply(reply::not_found);
   reply_sig(req, rep);
 }
 

@@ -19,6 +19,7 @@
 #include "server.hpp"
 #include "signals.hpp"
 #include "router.hpp"
+#include "route.hpp"
 
 #if !defined(_WIN32)
 
@@ -87,9 +88,14 @@ int main(int argc, char* argv[])
     }
     
     // Create router and bind it to on_request signal.
-    zest::server::router r;
+    zest::server::router_ptr r(new zest::server::router());
     zest::server::request_sig.connect(
-      boost::bind(&zest::server::router::process, &r, _1, _2));
+      boost::bind(&zest::server::router::process, r, _1, _2));
+    zest::server::route_ptr home = zest::server::route::create("/index.:format")
+      ->add_param("format",
+        zest::server::param_option<std::string>("[a-z0-9]{3,5}"));
+    r->map(home);
+    home->match("/index.json");
 
     // Block all signals for background thread.
     sigset_t new_mask;
