@@ -19,26 +19,12 @@
 #include "server.hpp"
 #include "router.hpp"
 #include "route.hpp"
-#include "mime_types.hpp"
+#include "local.hpp"
 
 #if !defined(_WIN32)
 
 #include <pthread.h>
 #include <signal.h>
-
-void hello_world(const zest::server::request& req,
-  zest::server::param_map &params, zest::server::reply& rep)
-{
-  std::ostringstream oss;
-  oss << "<h1>" << params["subject"] <<  ' ' << params["object"] << ' ' << params["format"] << "</h1>";
-  rep.content = oss.str();
-  rep.headers.resize(2);
-  rep.headers[0].name = "Content-Length";
-  rep.headers[0].value = boost::lexical_cast<std::string>(rep.content.size());
-  rep.headers[1].name = "Content-Type";
-  std::string format = boost::lexical_cast<std::string>(params["format"]);
-  rep.headers[1].value = zest::server::mime_types::extension_to_type(format);
-}
 
 int main(int argc, char* argv[])
 {
@@ -50,7 +36,9 @@ int main(int argc, char* argv[])
     std::string address;
     std::string port;
     unsigned int threads;
-    std::string redis_servers;
+    
+    // Create application.
+    zest::server::application_ptr a(new zest::server::local());
     
     namespace po = boost::program_options;
     
@@ -71,15 +59,17 @@ int main(int argc, char* argv[])
             ->default_value("80"), "set server port")
         ("threads,t", po::value<unsigned int>(&threads)
             ->default_value(4), "set number of threads")
-        ("redis-servers,r", po::value<std::string>(&redis_servers)
-            ->default_value("127.0.0.1:6379:1"), "set redis servers")
     ;
     
+    po::options_description application("Application");
+    
+    a->add_options(application);
+    
     po::options_description cmdline_options;
-    cmdline_options.add(generic).add(config);
+    cmdline_options.add(generic).add(config).add(application);
 
     po::options_description config_file_options;
-    config_file_options.add(config);
+    config_file_options.add(config).add(application);
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, cmdline_options), vm);
@@ -110,13 +100,8 @@ int main(int argc, char* argv[])
     
     // Create router.
     zest::server::router_ptr r(new zest::server::router());
+    a->map_routes(r);
     
-    r->map(zest::server::route::create("/:subject/rates/:object.:format")
-        ->add_param<std::string>("subject", "[^/.]{1,255}")
-        ->add_param<std::string>("object", "[^/.]{1,255}")
-        ->add_param<std::string>("format", "[a-z0-9]{3,5}"),
-          &hello_world);
-
     // Run server in background thread.
     zest::server::server s(address, port, threads, r);
     boost::thread t(boost::bind(&zest::server::server::run, &s));
