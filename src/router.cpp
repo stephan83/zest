@@ -23,7 +23,9 @@ void router::process(const request& req, reply& rep)
   std::string request_path;
   if (!url_decode(req.uri, request_path))
   {
-    rep = reply::stock_reply(reply::bad_request);
+    reply _rep = reply::stock_reply(reply::bad_request);
+    rep.headers = _rep.headers;
+    rep.content = _rep.content;
     return;
   }
   
@@ -45,7 +47,9 @@ void router::process(const request& req, reply& rep)
   }
   
   // Didn't find a matching pattern.
-  rep = reply::stock_reply(reply::not_found);
+  reply _rep = reply::stock_reply(reply::not_found);
+  rep.headers = _rep.headers;
+  rep.content = _rep.content;
 }
 
 bool router::url_decode(const std::string& in, std::string& out)
