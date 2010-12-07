@@ -26,37 +26,24 @@ route_ptr route::create(const std::string& path)
   return route_ptr(new route(path));
 }
 
-route_ptr route::add_param(const std::string& name,
-  const abstract_param_option& option)
-{
-  params_[name] = option;
-  
-  boost::regex e(":" + name);
-  
-  std::string pattern = "(?<" + name + ">" + option.pattern() + ")";
-  
-  path_with_params_ = boost::regex_replace(path_with_params_, e, pattern);
-std::cout << path_with_params_ << '\n';
-  return shared_from_this();
-}
-
-bool route::match(const std::string& path) const
+bool route::match(const std::string& path, param_map& params)
 {
   boost::regex e(path_with_params_);
+  
   boost::smatch values;
   
-  boost::regex_match(path, values, e,
+  bool result = boost::regex_match(path, values, e,
       boost::match_extra);
-      
-  std::cout << values["format"] << std::endl;
   
-  /*while(itr != end)
+  if(result)
   {
-    std::cout << (*itr).suffix() << '\n';
-    ++itr;
-  }*/
-      
-  return false;
+    BOOST_FOREACH(param_option_map::value_type value, param_options_)
+    {
+      params[value.first] = value.second->cast(values[value.first]);
+    }
+  }
+  
+  return result;
 }
 
 } // namespace server

@@ -13,12 +13,17 @@
 #include <string>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/function.hpp>
+#include <boost/tuple/tuple.hpp>
 #include "request.hpp"
 #include "reply.hpp"
 #include "route.hpp"
 
 namespace zest {
 namespace server {
+
+typedef boost::function<void (const request& req, param_map &params,
+  reply& rep)> router_func;
 
 class router
   : public boost::enable_shared_from_this<router>
@@ -27,40 +32,24 @@ class router
 public:
 
   /// Map a route.
-  void map(route_ptr r);
+  void map(route_ptr r, router_func f);
 
   /// Process a request. 
   void process(const request& req, reply& rep);
 
 private:
 
-  typedef boost::shared_ptr<boost::regex> regex_ptr;
+  typedef boost::tuple<route_ptr, router_func> mapped_route;
 
-  /// A route.
-  struct route
-  {
-    explicit route(const std::string &p, regex_ptr e)
-      : pattern(p), regex(e)
-    {
-    
-    }
-    
-    std::string pattern;
-    regex_ptr regex;
-  };
-    
-  /// A vector of routes.
-  typedef std::vector<route_ptr> routes;
-
-  /// A routes iterator.
-  typedef routes::iterator routes_itr;
+  typedef std::vector<mapped_route> route_vec;
+  
+  typedef route_vec::iterator route_itr;
 
   /// Perform URL-decoding on a string. Returns false if the encoding was
   /// invalid.
   static bool url_decode(const std::string& in, std::string& out);
   
-  /// Vector of routes.
-  routes routes_;
+  route_vec routes_;
   
 };
 

@@ -13,9 +13,9 @@
 namespace zest {
 namespace server {
 
-void router::map(route_ptr r)
+void router::map(route_ptr r, router_func f)
 {
-  
+  routes_.push_back(mapped_route(r, f));
 }
 
 void router::process(const request& req, reply& rep)
@@ -28,15 +28,16 @@ void router::process(const request& req, reply& rep)
     return;
   }
   
-  routes_itr itr = routes_.begin();
-  routes_itr end = routes_.end();
+  route_itr itr = routes_.begin();
+  route_itr end = routes_.end();
+  param_map params;
   
   while(itr != end)
   {
-    route_ptr r = *itr;
-    if(r->match(request_path))
+    mapped_route r = *itr;
+    if(r.get<0>()->match(request_path, params))
     {
-      route_sig(r, req, rep);
+      r.get<1>()(req, params, rep);
       return;
     }
   

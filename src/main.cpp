@@ -20,11 +20,28 @@
 #include "signals.hpp"
 #include "router.hpp"
 #include "route.hpp"
+#include "mime_types.hpp"
 
 #if !defined(_WIN32)
 
 #include <pthread.h>
 #include <signal.h>
+
+void hello_world(const zest::server::request& req,
+  zest::server::param_map &params, zest::server::reply& rep)
+{std::cout << "test\n";
+  std::ostringstream oss;
+  oss << "<h1>" << params["subject"] <<  ' ' << params["object"] << ' ' << params["format"] << "</h1>";
+  rep.content = oss.str();
+  rep.headers.resize(2);
+  rep.headers[0].name = "Content-Length";
+  rep.headers[0].value = boost::lexical_cast<std::string>(rep.content.size());
+  rep.headers[1].name = "Content-Type";
+  std::string format = boost::lexical_cast<std::string>(params["format"]);
+  rep.headers[1].value = zest::server::mime_types::extension_to_type(format);
+  
+  reply_sig(req, rep);
+}
 
 int main(int argc, char* argv[])
 {
@@ -91,11 +108,12 @@ int main(int argc, char* argv[])
     zest::server::router_ptr r(new zest::server::router());
     zest::server::request_sig.connect(
       boost::bind(&zest::server::router::process, r, _1, _2));
-    zest::server::route_ptr home = zest::server::route::create("/index.:format")
-      ->add_param("format",
-        zest::server::param_option<std::string>("[a-z0-9]{3,5}"));
-    r->map(home);
-    home->match("/index.json");
+    
+    r->map(zest::server::route::create("/:subject/rates/:object.:format")
+        ->add_param<std::string>("subject", "[^/.]{1,255}")
+        ->add_param<std::string>("object", "[^/.]{1,255}")
+        ->add_param<std::string>("format", "[a-z0-9]{3,5}"),
+          &hello_world);
 
     // Block all signals for background thread.
     sigset_t new_mask;

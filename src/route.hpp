@@ -15,53 +15,13 @@
 #include <boost/unordered_map.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/regex.hpp>
-#include <boost/lexical_cast.hpp>
 #include <boost/unordered_map.hpp>
-#include <boost/any.hpp>
 #include "request.hpp"
 #include "reply.hpp"
+#include "param.hpp"
 
 namespace zest {
 namespace server {
-
-class abstract_param_option
-{
-
-public:
-  
-  virtual boost::any cast(const std::string& value) const
-  {
-    return 0;
-  }
-  
-  const std::string& pattern() const
-  {
-    return pattern_;
-  }
-  
-protected:
-
-  std::string pattern_;
-  
-};
-
-template<typename Type>
-class param_option : public abstract_param_option
-{
-
-public:
-
-  param_option(const std::string& p)
-  {
-    pattern_ = p;
-  }
-  
-  boost::any cast(const std::string& value) const
-  {
-    return boost::lexical_cast<Type>(value);
-  }
-  
-};
 
 class route
   : public boost::enable_shared_from_this<route>
@@ -73,11 +33,28 @@ public:
   
   static ptr create(const std::string& path);
   
-  ptr add_param(const std::string& name, const abstract_param_option& param);
+  template <typename Type>
+  ptr add_param(const std::string& name, const std::string& pattern)
+  {
+    param_option_ptr option = param_option_ptr(
+        new typed_param_option<Type>(pattern));
+    param_options_[name] = option;
+    
+    boost::regex e(":" + name);
+    
+    std::string replace = "(?<" + name + ">" + pattern + ")";
+    
+    path_with_params_ = boost::regex_replace(path_with_params_, e, replace);
+
+    return shared_from_this();
+  }
   
-  bool match(const std::string& path) const;
+  bool match(const std::string& path, param_map& params);
 
 private:
+
+  typedef boost::unordered_map<std::string, param_option_ptr>
+    param_option_map;
 
   explicit route(const std::string& path);
 
@@ -85,7 +62,7 @@ private:
   
   std::string path_with_params_;
   
-  boost::unordered_map<std::string, abstract_param_option> params_;
+  param_option_map param_options_;
 
 };
 
