@@ -13,16 +13,16 @@
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <vector>
-#include <iostream>
+
 namespace zest {
 namespace server {
 
 server::server(const std::string& address, const std::string& port,
-    std::size_t thread_pool_size)
+    std::size_t thread_pool_size, router_ptr r)
   : thread_pool_size_(thread_pool_size),
     acceptor_(io_service_),
-    new_connection_(new connection(io_service_, request_handler_)),
-    request_handler_()
+    router_(r),
+    new_connection_(new connection(io_service_, r))
 {
   // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
   boost::asio::ip::tcp::resolver resolver(io_service_);
@@ -63,7 +63,7 @@ void server::handle_accept(const boost::system::error_code& e)
   if (!e)
   {
     new_connection_->start();
-    new_connection_.reset(new connection(io_service_, request_handler_));
+    new_connection_.reset(new connection(io_service_, router_));
     acceptor_.async_accept(new_connection_->socket(),
         boost::bind(&server::handle_accept, this,
           boost::asio::placeholders::error));

@@ -8,7 +8,6 @@
 //..............................................................................
 
 #include <string>
-#include <iostream>
 #include <boost/foreach.hpp>
 #include "route.hpp"
 
@@ -16,9 +15,12 @@ namespace zest {
 namespace server {
 
 route::route(const std::string& path)
-  : path_(path), path_with_params_(path)
+  : path_(path)
 {
-
+  boost::regex esc("[\\^\\.\\$\\|\\(\\)\\[\\]\\{\\}\\*\\+\\?\\\\]");
+  
+  path_with_params_ = regex_replace(path, esc, "\\\\\\1&", boost::match_default
+    | boost::format_sed);
 }
 
 route_ptr route::create(const std::string& path)

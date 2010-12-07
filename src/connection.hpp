@@ -19,7 +19,7 @@
 #include <boost/signals2.hpp>
 #include "reply.hpp"
 #include "request.hpp"
-#include "request_handler.hpp"
+#include "router.hpp"
 #include "request_parser.hpp"
 
 namespace zest {
@@ -33,7 +33,7 @@ class connection
 public:
   /// Construct a connection with the given io_service.
   explicit connection(boost::asio::io_service& io_service,
-      request_handler& handler);
+      router_ptr& r);
 
   /// Get the socket associated with the connection.
   boost::asio::ip::tcp::socket& socket();
@@ -58,8 +58,7 @@ private:
   /// Socket for the connection.
   boost::asio::ip::tcp::socket socket_;
 
-  /// The handler used to process the incoming request.
-  request_handler& request_handler_;
+  router_ptr router_;
 
   /// Buffer for incoming data.
   boost::array<char, 8192> buffer_;

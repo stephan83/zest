@@ -11,17 +11,15 @@
 #include "connection.hpp"
 #include <vector>
 #include <boost/bind.hpp>
-#include "request_handler.hpp"
-#include "signals.hpp"
 
 namespace zest {
 namespace server {
 
 connection::connection(boost::asio::io_service& io_service,
-    request_handler& handler)
+    router_ptr& r)
   : strand_(io_service),
     socket_(io_service),
-    request_handler_(handler)
+    router_(r)
 {
 }
 
@@ -50,10 +48,11 @@ void connection::handle_read(const boost::system::error_code& e,
 
     if (result)
     {
-      reply_sig_connection_ = reply_sig.connect(
-        boost::bind(&connection::on_reply, shared_from_this(), _1, _2));
-        
-      request_handler_.handle_request(request_, reply_);
+      router_->process(request_, reply_);
+      boost::asio::async_write(socket_, reply_.to_buffers(),
+          strand_.wrap(
+            boost::bind(&connection::handle_write, shared_from_this(),
+              boost::asio::placeholders::error)));
     }
     else if (!result)
     {
@@ -77,20 +76,6 @@ void connection::handle_read(const boost::system::error_code& e,
   // means that all shared_ptr references to the connection object will
   // disappear and the object will be destroyed automatically after this
   // handler returns. The connection class's destructor closes the socket.
-}
-
-void connection::on_reply(const request& req, reply& rep)
-{
-  if(&request_ == &req)
-  {
-    reply_sig_connection_.disconnect();
-
-    request_handler_.handle_request(request_, reply_);
-    boost::asio::async_write(socket_, reply_.to_buffers(),
-        strand_.wrap(
-          boost::bind(&connection::handle_write, shared_from_this(),
-            boost::asio::placeholders::error)));
-  }
 }
 
 void connection::handle_write(const boost::system::error_code& e)

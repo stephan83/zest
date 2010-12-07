@@ -17,7 +17,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 #include "connection.hpp"
-#include "request_handler.hpp"
+#include "router.hpp"
 
 namespace zest {
 namespace server {
@@ -29,7 +29,7 @@ class server
 public:
   /// Construct the server to listen on the specified TCP address and port.
   explicit server(const std::string& address, const std::string& port,
-      std::size_t thread_pool_size);
+      std::size_t thread_pool_size, router_ptr r);
 
   /// Run the server's io_service loop.
   void run();
@@ -50,11 +50,10 @@ private:
   /// Acceptor used to listen for incoming connections.
   boost::asio::ip::tcp::acceptor acceptor_;
 
+  router_ptr router_;
+
   /// The next connection to be accepted.
   connection_ptr new_connection_;
-
-  /// The handler for all incoming requests.
-  request_handler request_handler_;
 };
 
 } // namespace server

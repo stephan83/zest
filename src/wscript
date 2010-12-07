@@ -9,7 +9,7 @@ def build(bld):
     target            = 'C_OBJS'
   )
   bld.objects(
-    source            = 'connection.cpp mime_types.cpp reply.cpp request_handler.cpp router.cpp route.cpp request_parser.cpp server.cpp signals.cpp',
+    source            = 'connection.cpp mime_types.cpp reply.cpp router.cpp route.cpp request_parser.cpp server.cpp',
     includes          = '.',
     cxxflags          = '-O3 -Wall',
     target            = 'CXX_OBJS'

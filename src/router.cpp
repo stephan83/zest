@@ -8,7 +8,6 @@
 //..............................................................................
 
 #include "router.hpp"
-#include "signals.hpp"
 
 namespace zest {
 namespace server {
@@ -41,12 +40,12 @@ void router::process(const request& req, reply& rep)
       return;
     }
   
+    params.clear();
     ++itr;
   }
   
   // Didn't find a matching pattern.
   rep = reply::stock_reply(reply::not_found);
-  reply_sig(req, rep);
 }
 
 bool router::url_decode(const std::string& in, std::string& out)

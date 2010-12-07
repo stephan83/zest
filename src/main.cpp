@@ -17,7 +17,6 @@
 #include <boost/program_options.hpp>
 #include "version.hpp"
 #include "server.hpp"
-#include "signals.hpp"
 #include "router.hpp"
 #include "route.hpp"
 #include "mime_types.hpp"
@@ -29,7 +28,7 @@
 
 void hello_world(const zest::server::request& req,
   zest::server::param_map &params, zest::server::reply& rep)
-{std::cout << "test\n";
+{
   std::ostringstream oss;
   oss << "<h1>" << params["subject"] <<  ' ' << params["object"] << ' ' << params["format"] << "</h1>";
   rep.content = oss.str();
@@ -39,8 +38,6 @@ void hello_world(const zest::server::request& req,
   rep.headers[1].name = "Content-Type";
   std::string format = boost::lexical_cast<std::string>(params["format"]);
   rep.headers[1].value = zest::server::mime_types::extension_to_type(format);
-  
-  reply_sig(req, rep);
 }
 
 int main(int argc, char* argv[])
@@ -103,11 +100,16 @@ int main(int argc, char* argv[])
         std::cout << zest::version::version_string << std::endl;
         return 0;
     }
+
+    // Block all signals for background thread.
+    sigset_t new_mask;
+    sigfillset(&new_mask);
+    sigset_t old_mask;
+    pthread_sigmask(SIG_BLOCK, &new_mask, &old_mask);
     
-    // Create router and bind it to on_request signal.
+    
+    // Create router.
     zest::server::router_ptr r(new zest::server::router());
-    zest::server::request_sig.connect(
-      boost::bind(&zest::server::router::process, r, _1, _2));
     
     r->map(zest::server::route::create("/:subject/rates/:object.:format")
         ->add_param<std::string>("subject", "[^/.]{1,255}")
@@ -115,14 +117,8 @@ int main(int argc, char* argv[])
         ->add_param<std::string>("format", "[a-z0-9]{3,5}"),
           &hello_world);
 
-    // Block all signals for background thread.
-    sigset_t new_mask;
-    sigfillset(&new_mask);
-    sigset_t old_mask;
-    pthread_sigmask(SIG_BLOCK, &new_mask, &old_mask);
-
     // Run server in background thread.
-    zest::server::server s(address, port, threads);
+    zest::server::server s(address, port, threads, r);
     boost::thread t(boost::bind(&zest::server::server::run, &s));
 
     // Restore previous signals.
