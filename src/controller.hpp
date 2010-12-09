@@ -19,13 +19,13 @@
 #include "router.hpp"
 #include "request.hpp"
 #include "reply.hpp"
-#include "param.hpp"
+#include "json_var.hpp"
 #include "response.hpp"
 
 namespace zest {
 namespace server {
 
-typedef boost::function<void (const request& req, param_map &params,
+typedef boost::function<void (const request& req, json_var &params,
   response& response)> action;
 
 class controller
@@ -39,7 +39,7 @@ public:
   
   action get_action(const std::string& name);
   
-  void handle_request(const request& req, param_map &params, reply& rep,
+  void handle_request(const request& req, json_var &params, reply& rep,
       const std::string& action_name);
     
 private:

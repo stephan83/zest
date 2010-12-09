@@ -9,6 +9,7 @@
 
 #include <boost/lexical_cast.hpp>
 #include "form_parser.hpp"
+#include "utils.hpp"
 //#include <iostream>
 namespace zest {
 namespace server {
@@ -59,14 +60,14 @@ boost::tribool form_parser::consume(json_var& variable, char input)
     }
     else if (input == '&')
     {
-      (*var_)[value_] = json_var("true");
+      (*var_)[value_] = json_var(true);
       value_.clear();
       state_ = var_start;
       return boost::indeterminate;
     }
     else if(input == '\0')
     {
-      (*var_)[value_] = json_var("true");
+      (*var_)[value_] = json_var(true);
       return true;
     }
     else if (!is_char(input) || is_tspecial(input))
@@ -79,7 +80,7 @@ boost::tribool form_parser::consume(json_var& variable, char input)
       return boost::indeterminate;
     }
   case property_start:
-    if (is_char(input))
+    if (is_char(input) && !is_tspecial(input))
     {
       if((*var_)[value_].get_type() != json_var::object_var)
        (*var_)[value_] = json_var(json_var::object_var);
@@ -154,7 +155,9 @@ boost::tribool form_parser::consume(json_var& variable, char input)
     if (input == '&')
     {
       //std::cout << value_ << '\n';
-      (*var_) = value_;
+      std::string value;
+      utils::url_decode(value_, value);
+      (*var_) = value;
       value_.clear();
       var_ = &variable;
       state_ = var_start;
@@ -163,7 +166,9 @@ boost::tribool form_parser::consume(json_var& variable, char input)
     else if (input == '\0')
     {
       //std::cout << value_ << '\n';
-      (*var_) = value_;
+      std::string value;
+      utils::url_decode(value_, value);
+      (*var_) = value;
       return true;
     }
     else

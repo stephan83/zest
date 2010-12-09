@@ -18,31 +18,25 @@ void rate_controller::add_actions()
   ZEST_ADD_ACTION(rate_controller, show)
 }
     
-void rate_controller::show(const request& req, param_map &params,
+void rate_controller::show(const request& req, json_var &params,
   response& resp)
 {
   resp.status = reply::ok;
-  resp.format << params["format"];
+  resp.format << params["format"].to_string();
   
   if(resp.format.str() == "json")
   {
-    resp.content
-      << "{\n"
-        << "  \"subject\": \"" << params["subject"] << "\",\n"
-        << "  \"object\": \""  << params["object"]  << "\",\n"
-        << "  \"format\": \""  << params["format"]  << "\"\n"
-      << "}\n"
-    ;
+    resp.content << params.to_json();
   }
   else if(resp.format.str() == "html")
   {
-    resp.content
+    /*resp.content
       << "<ul>"
         << "<li>" << params["subject"] << "</li>"
         << "<li>" << params["object"]  << "</li>"
         << "<li>" << params["format"]  << "</li>"
       << "</ul>"
-    ;
+    ;*/
   }
 }
 

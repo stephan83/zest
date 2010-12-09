@@ -19,6 +19,7 @@
 #include "request.hpp"
 #include "reply.hpp"
 #include "param.hpp"
+#include "json_var.hpp"
 
 namespace zest {
 namespace server {
@@ -49,7 +50,7 @@ public:
     return shared_from_this();
   }
   
-  bool match(const std::string& path, param_map& params);
+  bool match(const std::string& path, json_var& object);
 
 private:
 

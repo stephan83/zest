@@ -7,8 +7,9 @@
 //
 //..............................................................................
 
-#include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 #include "json_var.hpp"
+#include "utils.hpp"
 
 namespace zest {
 namespace server {
@@ -16,6 +17,8 @@ namespace server {
 json_var nil;
 
 const std::string nil_str = "null";
+const std::string true_str = "true";
+const std::string false_str = "false";
 
 json_var::json_var()
 {
@@ -29,6 +32,15 @@ json_var::json_var(type t)
   {
     case string_var:
     value_ = std::string("");
+    break;
+    case int_var:
+    value_ = 0;
+    break;
+    case float_var:
+    value_ = .0f;
+    break;
+    case bool_var:
+    value_ = false;
     break;
     case object_var:
     value_ = object();
@@ -56,6 +68,24 @@ json_var::json_var(const char* value)
   type_ = string_var;
 }
 
+json_var::json_var(int value)
+{
+  value_ = value;
+  type_ = int_var;
+}
+
+json_var::json_var(float value)
+{
+  value_ = value;
+  type_ = float_var;
+}
+
+json_var::json_var(bool value)
+{
+  value_ = value;
+  type_ = bool_var;
+}
+
 json_var::json_var(const object& value)
 {
   value_ = value;
@@ -74,22 +104,65 @@ std::string json_var::to_string()
   {
     return *boost::any_cast<std::string>(&value_);
   }
+  
+  return to_json();
+}
+
+std::string json_var::to_json()
+{
+  if(type_ == string_var)
+  {
+    std::string result = "\"";
+    result += utils::escape(*boost::any_cast<std::string>(&value_));
+    result += "\"";
+    
+    return result;
+  }
+  else if(type_ == int_var)
+  {
+    std::string result = boost::lexical_cast<std::string>(
+      *boost::any_cast<int>(&value_));
+    return result;
+  }
+  else if(type_ == float_var)
+  {
+    std::string result = boost::lexical_cast<std::string>(
+      *boost::any_cast<float>(&value_));
+    return result;
+  }
+  else if(type_ == bool_var)
+  {
+    if(*boost::any_cast<bool>(&value_))
+    {
+      return true_str;
+    }
+    return false_str;
+  }
   else if(type_ == object_var)
   {
     object obj = to_object();
-    std::string result = "[";
+    std::string result = "{";
+    object::iterator begin = obj.begin();
+    object::iterator end = obj.end();
     
-    BOOST_FOREACH(object::value_type element, obj)
+    while(begin != end)
     {
-      result += element.first;
-      result += " => ";
-      if(element.second.type_ == string_var) result += '"';
-      result += element.second.to_string();
-      if(element.second.type_ == string_var) result += '"';
-      result += "; ";
+      object::value_type& element = *begin;
+      
+      result += '"';
+      result += utils::escape(element.first);
+      result += "\": ";
+      result += element.second.to_json();
+    
+      ++begin;
+    
+      if(begin != end)
+      {
+        result += ", ";
+      }
     }
     
-    result += ']';
+    result += '}';
     
     return result;
   }
@@ -97,13 +170,21 @@ std::string json_var::to_string()
   {
     array arr = to_array();
     std::string result = "[";
+    array::iterator begin = arr.begin();
+    array::iterator end = arr.end();
     
-    BOOST_FOREACH(array::value_type element, arr)
+    while(begin != end)
     {
-      if(element.type_ == string_var) result += '"';
-      result += element.to_string();
-      if(element.type_ == string_var) result += '"';
-      result += "; ";
+      array::value_type& element = *begin;
+      
+      result += element.to_json();
+    
+      ++begin;
+    
+      if(begin != end)
+      {
+        result += ", ";
+      }
     }
     
     result += ']';

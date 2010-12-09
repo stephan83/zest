@@ -28,7 +28,7 @@ route_ptr route::create(const std::string& path)
   return route_ptr(new route(path));
 }
 
-bool route::match(const std::string& path, param_map& params)
+bool route::match(const std::string& path, json_var& object)
 {
   boost::regex e(path_with_params_);
   
@@ -41,7 +41,7 @@ bool route::match(const std::string& path, param_map& params)
   {
     BOOST_FOREACH(param_option_map::value_type value, param_options_)
     {
-      params[value.first] = value.second->cast(values[value.first]);
+      value.second->cast(values[value.first], object[value.first]);
     }
   }
   

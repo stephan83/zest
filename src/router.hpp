@@ -18,11 +18,12 @@
 #include "request.hpp"
 #include "reply.hpp"
 #include "route.hpp"
+#include "json_var.hpp"
 
 namespace zest {
 namespace server {
 
-typedef boost::function<void (const request& req, param_map &params,
+typedef boost::function<void (const request& req, json_var &params,
   reply& rep)> router_func;
 
 class router
@@ -44,12 +45,6 @@ private:
   typedef std::vector<mapped_route> route_vec;
   
   typedef route_vec::iterator route_itr;
-
-  /// Perform URL-decoding on a string. Returns false if the encoding was
-  /// invalid.
-  static bool url_decode(const std::string& in, std::string& out);
-  
-  static bool form_decode(const std::string& in);
   
   route_vec routes_;
   

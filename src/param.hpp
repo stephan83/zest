@@ -17,22 +17,30 @@
 #include <boost/variant.hpp>
 #include "request.hpp"
 #include "reply.hpp"
-#include "param.hpp"
+#include "json_var.hpp"
 
 namespace zest {
 namespace server {
 
-typedef boost::variant< int, float, double, std::string > param_value;
-typedef boost::unordered_map<std::string, param_value> param_map;
+typedef boost::variant< int, float, bool, std::string > param_value;
 
 class param_option
 {
 
 public:
-  
-  virtual param_value cast(const std::string& value) const
+
+  param_option()
   {
-    return value;
+  }
+
+  param_option(const std::string& p)
+  {
+    pattern_ = p;
+  }
+  
+  virtual void cast(const std::string& in, json_var& out) const
+  {
+    out = in;
   }
   
   const std::string& pattern() const
@@ -57,9 +65,9 @@ public:
     pattern_ = p;
   }
   
-  param_value cast(const std::string& value) const
+  void cast(const std::string& in, json_var& out) const
   {
-    return boost::lexical_cast<Type>(value);
+    out = boost::lexical_cast<Type>(in);
   }
   
 };

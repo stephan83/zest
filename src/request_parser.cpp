@@ -303,7 +303,7 @@ boost::tribool request_parser::consume(request& req, char input)
     }
     else
     {
-      return false;
+      return input == '\n';
     }
   case content:
     req.content += input;

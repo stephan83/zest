@@ -23,7 +23,16 @@ class json_var
 
 public:
 
-  enum type { string_var, object_var, array_var, null_var };
+  enum type
+  {
+    string_var,
+    int_var,
+    float_var,
+    bool_var,
+    object_var,
+    array_var,
+    null_var
+  };
 
   typedef boost::unordered_map<std::string, json_var> object;
   typedef std::vector<json_var> array;
@@ -36,15 +45,29 @@ public:
   
   explicit json_var(const char* value);
   
+  explicit json_var(int value);
+  
+  explicit json_var(float value);
+  
+  explicit json_var(bool value);
+  
   explicit json_var(const object& value);
   
   explicit json_var(const array& value);
   
   std::string to_string();
   
+  std::string to_json();
+  
   json_var& operator=(const std::string& value);
   
   json_var& operator=(const char* value);
+  
+  json_var& operator=(int value);
+  
+  json_var& operator=(float value);
+  
+  json_var& operator=(bool value);
   
   json_var& operator=(const object& value);
   

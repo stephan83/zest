@@ -23,7 +23,7 @@ action controller::get_action(const std::string& name)
   return actions_[name];
 }
 
-void controller::handle_request(const request& req, param_map &params,
+void controller::handle_request(const request& req, json_var &params,
   reply& rep, const std::string& action_name)
 {
   action a = get_action(action_name);
