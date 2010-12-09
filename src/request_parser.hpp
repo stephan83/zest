@@ -86,8 +86,12 @@ private:
     space_before_header_value,
     header_value,
     expecting_newline_2,
-    expecting_newline_3
+    expecting_newline_3,
+    content
   } state_;
+  
+  /// Content length.
+  size_t content_length_;
 };
 
 } // namespace server

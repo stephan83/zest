@@ -11,12 +11,14 @@
 #define ZEST_RESPONSE_HPP
 
 #include <iostream>
+#include "reply.hpp"
 
 namespace zest {
 namespace server {
 
 struct response
 {
+  reply::status_type status;
   std::ostringstream format;
   std::ostringstream content;
 };

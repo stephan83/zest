@@ -8,6 +8,8 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
+#include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
 #include "request_parser.hpp"
 #include "request.hpp"
 
@@ -15,7 +17,7 @@ namespace zest {
 namespace server {
 
 request_parser::request_parser()
-  : state_(method_start)
+  : state_(method_start), content_length_(0)
 {
 }
 
@@ -264,6 +266,13 @@ boost::tribool request_parser::consume(request& req, char input)
   case header_value:
     if (input == '\r')
     {
+      if(boost::iequals(req.headers.back().name, "content-length"))
+      {
+        content_length_ =
+          boost::lexical_cast<size_t>(req.headers.back().value);
+        req.content.reserve(content_length_);
+      }
+      
       state_ = expecting_newline_2;
       return boost::indeterminate;
     }
@@ -272,7 +281,7 @@ boost::tribool request_parser::consume(request& req, char input)
       return false;
     }
     else
-    {
+    {      
       req.headers.back().value.push_back(input);
       return boost::indeterminate;
     }
@@ -287,7 +296,25 @@ boost::tribool request_parser::consume(request& req, char input)
       return false;
     }
   case expecting_newline_3:
-    return (input == '\n');
+    if(content_length_)
+    {
+      state_ = content;
+      return boost::indeterminate;
+    }
+    else
+    {
+      return false;
+    }
+  case content:
+    req.content += input;
+    if(!--content_length_)
+    {
+      return true;
+    }
+    else
+    {
+      return boost::indeterminate;
+    }
   default:
     return false;
   }

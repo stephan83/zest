@@ -8,7 +8,8 @@
 //..............................................................................
 
 #include "router.hpp"
-
+#include "form_parser.hpp"
+#include <iostream>
 namespace zest {
 namespace server {
 
@@ -38,6 +39,22 @@ void router::process(const request& req, reply& rep)
     mapped_route r = *itr;
     if(r.get<0>()->match(request_path, params))
     {
+      form_parser parser;
+      json_var var(json_var::object_var);
+      boost::tribool result;
+      boost::tie(result, boost::tuples::ignore) =
+        parser.parse(var, req.content.begin(), req.content.end());
+        
+      if(!result)
+      {
+        reply _rep = reply::stock_reply(reply::bad_request);
+        rep.headers = _rep.headers;
+        rep.content = _rep.content;
+        return;
+      }
+      
+      std::cout << var.to_string() << '\n';
+      
       r.get<1>()(req, params, rep);
       return;
     }

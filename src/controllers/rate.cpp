@@ -8,6 +8,7 @@
 //..............................................................................
 
 #include "rate.hpp"
+#include "reply.hpp"
 
 namespace zest {
 namespace server {
@@ -20,15 +21,29 @@ void rate_controller::add_actions()
 void rate_controller::show(const request& req, param_map &params,
   response& resp)
 {
+  resp.status = reply::ok;
   resp.format << params["format"];
   
-  resp.content
-    << "<ul>"
-      << "<li>" << params["subject"] << "</li>"
-      << "<li>" << params["object"]  << "</li>"
-      << "<li>" << params["format"]  << "</li>"
-    << "</ul>"
-  ;
+  if(resp.format.str() == "json")
+  {
+    resp.content
+      << "{\n"
+        << "  \"subject\": \"" << params["subject"] << "\",\n"
+        << "  \"object\": \""  << params["object"]  << "\",\n"
+        << "  \"format\": \""  << params["format"]  << "\"\n"
+      << "}\n"
+    ;
+  }
+  else if(resp.format.str() == "html")
+  {
+    resp.content
+      << "<ul>"
+        << "<li>" << params["subject"] << "</li>"
+        << "<li>" << params["object"]  << "</li>"
+        << "<li>" << params["format"]  << "</li>"
+      << "</ul>"
+    ;
+  }
 }
 
 } // namespace server

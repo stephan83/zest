@@ -32,6 +32,8 @@ void controller::handle_request(const request& req, param_map &params,
   
   a(req, params, resp);
   
+  rep.status = resp.status;
+  
   rep.content = resp.content.str();
   rep.headers.resize(2);
   rep.headers[0].name = "Content-Length";

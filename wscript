@@ -2,7 +2,7 @@ def options(opt):
   opt.load('compiler_c compiler_cxx boost')
 
 def configure(conf):
-  conf.load('compiler_c compiler_cxx') 
+  conf.load('compiler_c compiler_cxx')
   conf.check(
     features          = 'c cprogram',
     cflags            = '-O3 -Wall'
@@ -15,6 +15,10 @@ def configure(conf):
     lib               = 'pthread',
     uselib_store      = 'PTHREAD'
   )
+  #conf.check(
+  #  lib               = 'ctemplate',
+  #  uselib_store      = 'CTEMPLATE'
+  #)
   conf.load('boost')
   conf.check_boost(
     lib               = 'date_time filesystem log program_options regex '

@@ -49,6 +49,8 @@ private:
   /// invalid.
   static bool url_decode(const std::string& in, std::string& out);
   
+  static bool form_decode(const std::string& in);
+  
   route_vec routes_;
   
 };
