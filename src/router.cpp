@@ -7,6 +7,7 @@
 //
 //..............................................................................
 
+#include <boost/algorithm/string.hpp>
 #include "router.hpp"
 #include "utils.hpp"
 #include "form_parser.hpp"
@@ -15,9 +16,24 @@
 namespace zest {
 namespace server {
 
-void router::map(route_ptr r, router_func f)
+void router::get(route_ptr r, router_func f)
 {
-  routes_.push_back(mapped_route(r, f));
+  gets_.push_back(mapped_route(r, f));
+}
+
+void router::post(route_ptr r, router_func f)
+{
+  posts_.push_back(mapped_route(r, f));
+}
+
+void router::put(route_ptr r, router_func f)
+{
+  puts_.push_back(mapped_route(r, f));
+}
+
+void router::del(route_ptr r, router_func f)
+{
+  dels_.push_back(mapped_route(r, f));
 }
 
 void router::process(const request& req, reply& rep)
@@ -66,8 +82,29 @@ void router::process(const request& req, reply& rep)
     }
   }
   
-  route_itr itr = routes_.begin();
-  route_itr end = routes_.end();
+  route_itr itr;
+  route_itr end;
+  
+  if(boost::iequals(req.method, "get") || boost::iequals(req.method, "head"))
+  {
+    itr = gets_.begin();
+    end = gets_.end();
+  }
+  else if(boost::iequals(req.method, "post"))
+  {
+    itr = posts_.begin();
+    end = posts_.end();
+  }
+  else if(boost::iequals(req.method, "put"))
+  {
+    itr = puts_.begin();
+    end = puts_.end();
+  }
+  else if(boost::iequals(req.method, "del"))
+  {
+    itr = dels_.begin();
+    end = dels_.end();
+  }
   
   while(itr != end)
   {

@@ -28,7 +28,7 @@ void local::add_options(boost::program_options::options_description &o)
 
 void local::map_routes(router_ptr r)
 {
-  r->map(zest::server::route::create("/:subject/rates/:object.:format")
+  r->get(zest::server::route::create("/:subject/rates/:object.:format")
         ->add_param<std::string>("subject", "[^/.]{1,255}")
         ->add_param<std::string>("object", "[^/.]{1,255}")
         ->add_param<std::string>("format", "[a-z0-9]{3,5}"),

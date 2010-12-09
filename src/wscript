@@ -19,8 +19,8 @@ def build(bld):
     includes          = '.',
     target            = '../zest',
     vnum              = '0.0.1',
-    lib               = 'ctemplate',
-    use               = 'PTHREAD BOOST BOOST_DATE_TIME BOOST_FILESYSTEM BOOST_LOG '
+    lib               = 'z',
+    use               = 'PTHREAD BOOST BOOST_IOSTREAMS BOOST_DATE_TIME BOOST_FILESYSTEM BOOST_LOG '
                       + 'BOOST_PROGRAM_OPTIONS BOOST_REGEX '
                       + 'BOOST_SERIALIZATION BOOST_SYSTEM BOOST_THREAD BOOST_THREAD_MT C_OBJS CXX_OBJS',
     cxxflags          = '-O3 -Wall'

@@ -11,6 +11,7 @@
 #define ZEST_RESPONSE_HPP
 
 #include <iostream>
+#include <boost/iostreams/filtering_stream.hpp>
 #include "reply.hpp"
 
 namespace zest {
@@ -20,7 +21,7 @@ struct response
 {
   reply::status_type status;
   std::string format;
-  std::ostringstream content;
+  boost::iostreams::filtering_ostream content;
 };
 
 } // namespace server

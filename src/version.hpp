@@ -13,11 +13,11 @@
 #include <string>
 
 namespace zest {
-namespace version {
+namespace server {
 
 const char version_string[] = "0.0.1";
 
-} // namespace version
+} // namespace server
 } // namespace zest
 
 #endif // ZEST_VERSION_HPP

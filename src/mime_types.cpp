@@ -21,12 +21,12 @@ struct mapping
 } mappings[] =
 {
   { "gif", "image/gif" },
-  { "htm", "text/html" },
-  { "html", "text/html" },
+  { "htm", "text/html; charset=utf-8" },
+  { "html", "text/html; charset=utf-8" },
   { "jpg", "image/jpeg" },
-  { "json", "application/json" },
+  { "json", "application/json; charset=utf-8" },
   { "png", "image/png" },
-  { "xml", "application/xml" },
+  { "xml", "application/xml; charset=utf-8" },
   { 0, 0 } // Marks end of list.
 };
 

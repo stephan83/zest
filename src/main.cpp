@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
     }
     
     if (vm.count("version")) {
-        std::cout << zest::version::version_string << std::endl;
+        std::cout << zest::server::version_string << std::endl;
         return 0;
     }
     

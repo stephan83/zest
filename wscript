@@ -21,7 +21,7 @@ def configure(conf):
   #)
   conf.load('boost')
   conf.check_boost(
-    lib               = 'date_time filesystem log program_options regex '
+    lib               = 'date_time filesystem iostreams log program_options regex '
                       + 'serialization system thread',
     static            = 'onlystatic'
   )

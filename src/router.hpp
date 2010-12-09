@@ -32,8 +32,17 @@ class router
 
 public:
 
-  /// Map a route.
-  void map(route_ptr r, router_func f);
+  /// Map a get route.
+  void get(route_ptr r, router_func f);
+  
+  /// Map a post route.
+  void post(route_ptr r, router_func f);
+  
+  /// Map a put route.
+  void put(route_ptr r, router_func f);
+  
+  /// Map a delete route.
+  void del(route_ptr r, router_func f);
 
   /// Process a request. 
   void process(const request& req, reply& rep);
@@ -46,7 +55,13 @@ private:
   
   typedef route_vec::iterator route_itr;
   
-  route_vec routes_;
+  route_vec gets_;
+  
+  route_vec posts_;
+  
+  route_vec puts_;
+  
+  route_vec dels_;
   
 };
 
