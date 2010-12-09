@@ -22,21 +22,15 @@ void rate_controller::show(const request& req, json_var &params,
   response& resp)
 {
   resp.status = reply::ok;
-  resp.format << params["format"].to_string();
+  resp.format = params["format"].to_string();
   
-  if(resp.format.str() == "json")
+  if(resp.format == "json")
   {
     resp.content << params.to_json();
   }
-  else if(resp.format.str() == "html")
+  else if(resp.format == "html")
   {
-    /*resp.content
-      << "<ul>"
-        << "<li>" << params["subject"] << "</li>"
-        << "<li>" << params["object"]  << "</li>"
-        << "<li>" << params["format"]  << "</li>"
-      << "</ul>"
-    ;*/
+    resp.content << params.to_html();
   }
 }
 

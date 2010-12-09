@@ -55,9 +55,11 @@ public:
   
   explicit json_var(const array& value);
   
-  std::string to_string();
+  std::string to_string() const;
   
-  std::string to_json();
+  std::string to_json() const;
+  
+  std::string to_html() const;
   
   json_var& operator=(const std::string& value);
   
@@ -74,8 +76,12 @@ public:
   json_var& operator=(const array& value);
   
   json_var& operator[](const std::string& property);
+  
+  const json_var& operator[](const std::string& property) const;
 
   json_var& operator[](size_t index);
+
+  const json_var& operator[](size_t index) const;
   
   json_var& operator+=(const std::string& value);
   
@@ -84,6 +90,8 @@ public:
   json_var& operator+=(char value);
   
   type get_type() const;
+  
+  bool dirty() const;
   
 private:
 
@@ -98,6 +106,8 @@ private:
   boost::any value_;
   
   type type_;
+  
+  bool dirty_;
 
 };
 

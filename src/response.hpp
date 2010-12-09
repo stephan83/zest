@@ -19,7 +19,7 @@ namespace server {
 struct response
 {
   reply::status_type status;
-  std::ostringstream format;
+  std::string format;
   std::ostringstream content;
 };
 

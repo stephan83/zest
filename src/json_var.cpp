@@ -21,12 +21,14 @@ const std::string true_str = "true";
 const std::string false_str = "false";
 
 json_var::json_var()
+  : dirty_(false)
 {
   value_ = 0;
   type_ = null_var;
 }
 
 json_var::json_var(type t)
+  : dirty_(false)
 {
   switch(t)
   {
@@ -57,48 +59,55 @@ json_var::json_var(type t)
 }
 
 json_var::json_var(const std::string& value)
+  : dirty_(false)
 {
   value_ = value;
   type_ = string_var;
 }
 
 json_var::json_var(const char* value)
+  : dirty_(false)
 {
   value_ = std::string(value);
   type_ = string_var;
 }
 
 json_var::json_var(int value)
+  : dirty_(false)
 {
   value_ = value;
   type_ = int_var;
 }
 
 json_var::json_var(float value)
+  : dirty_(false)
 {
   value_ = value;
   type_ = float_var;
 }
 
 json_var::json_var(bool value)
+  : dirty_(false)
 {
   value_ = value;
   type_ = bool_var;
 }
 
 json_var::json_var(const object& value)
+  : dirty_(false)
 {
   value_ = value;
   type_ = object_var;
 }
 
 json_var::json_var(const array& value)
+  : dirty_(false)
 {
   value_ = value;
   type_ = array_var;
 }
 
-std::string json_var::to_string()
+std::string json_var::to_string() const
 {
   if(type_ == string_var)
   {
@@ -108,7 +117,7 @@ std::string json_var::to_string()
   return to_json();
 }
 
-std::string json_var::to_json()
+std::string json_var::to_json() const
 {
   if(type_ == string_var)
   {
@@ -197,12 +206,89 @@ std::string json_var::to_json()
   }
 }
 
+std::string json_var::to_html() const
+{
+  if(type_ == string_var)
+  {
+    return *boost::any_cast<std::string>(&value_);
+  }
+  else if(type_ == int_var)
+  {
+    std::string result = boost::lexical_cast<std::string>(
+      *boost::any_cast<int>(&value_));
+    return result;
+  }
+  else if(type_ == float_var)
+  {
+    std::string result = boost::lexical_cast<std::string>(
+      *boost::any_cast<float>(&value_));
+    return result;
+  }
+  else if(type_ == bool_var)
+  {
+    if(*boost::any_cast<bool>(&value_))
+    {
+      return true_str;
+    }
+    return false_str;
+  }
+  else if(type_ == object_var)
+  {
+    object obj = to_object();
+    std::string result;
+    object::iterator begin = obj.begin();
+    object::iterator end = obj.end();
+    
+    while(begin != end)
+    {
+      object::value_type& element = *begin;
+      
+      result += "<div class=\"";
+      result += utils::escape(element.first);
+      result += "\">";
+      result += element.second.to_html();
+      result += "</div>";
+      
+      ++begin;
+    }
+    
+    return result;
+  }
+  else if(type_ == array_var)
+  {
+    array arr = to_array();
+    std::string result = "<ul>";
+    array::iterator begin = arr.begin();
+    array::iterator end = arr.end();
+    
+    while(begin != end)
+    {
+      array::value_type& element = *begin;
+      
+      result += "<li>";
+      result += element.to_html();
+      result += "</li>";
+    
+      ++begin;
+    }
+    
+    result += "</ul>";
+    
+    return result;
+  }
+  else
+  {
+    return nil_str;
+  }
+}
+
 json_var& json_var::operator=(const std::string& value)
 {
   if(this != &nil)
   {
     value_ = value;
     type_ = string_var;
+    dirty_ = true;
   }
   return *this;
 }
@@ -213,6 +299,40 @@ json_var& json_var::operator=(const char* value)
   {
     value_ = std::string(value);
     type_ = string_var;
+    dirty_ = true;
+  }
+  return *this;
+}
+
+json_var& json_var::operator=(int value)
+{
+  if(this != &nil)
+  {
+    value_ = value;
+    type_ = int_var;
+    dirty_ = true;
+  }
+  return *this;
+}
+
+json_var& json_var::operator=(float value)
+{
+  if(this != &nil)
+  {
+    value_ = value;
+    type_ = float_var;
+    dirty_ = true;
+  }
+  return *this;
+}
+
+json_var& json_var::operator=(bool value)
+{
+  if(this != &nil)
+  {
+    value_ = value;
+    type_ = bool_var;
+    dirty_ = true;
   }
   return *this;
 }
@@ -223,6 +343,7 @@ json_var& json_var::operator=(const object& value)
   {
     value_ = value;
     type_ = object_var;
+    dirty_ = true;
   }
   return *this;
 }
@@ -233,6 +354,7 @@ json_var& json_var::operator=(const array& value)
   {
     value_ = value;
     type_ = array_var;
+    dirty_ = true;
   }
   return *this;
 }
@@ -241,7 +363,28 @@ json_var& json_var::operator[](const std::string& property)
 {
   if(type_ == object_var)
   {
+    dirty_ = true;
     return to_object()[property];
+  }
+  else
+  {
+    return nil;
+  }
+}
+
+const json_var& json_var::operator[](const std::string& property) const
+{
+  if(type_ == object_var)
+  {
+    const object& obj = to_object();
+    object::const_iterator itr =  obj.find(property);
+    
+    if(itr == obj.end())
+    {
+      return nil;
+    }
+    
+    return (*itr).second;
   }
   else
   {
@@ -261,11 +404,31 @@ json_var& json_var::operator[](size_t index)
   }
 }
 
+const json_var& json_var::operator[](size_t index) const
+{
+  if(type_ == array_var)
+  {
+    const array& arr = to_array();
+    
+    if(index < arr.size())
+    {
+      return arr[index];
+    }
+    
+    return nil;
+  }
+  else
+  {
+    return nil;
+  }
+}
+
 json_var& json_var::operator+=(const std::string& value)
 {
   if(type_ == string_var)
   {
     (*boost::any_cast<std::string>(&value_)) += value;
+    dirty_ = true;
   }
   return *this;
 }
@@ -275,6 +438,7 @@ json_var& json_var::operator+=(const char* value)
   if(type_ == string_var)
   {
     (*boost::any_cast<std::string>(&value_)) += value;
+    dirty_ = true;
   }
   return *this;
 }
@@ -284,6 +448,7 @@ json_var& json_var::operator+=(char value)
   if(type_ == string_var)
   {
     (*boost::any_cast<std::string>(&value_)) += value;
+    dirty_ = true;
   }
   return *this;
 }
@@ -311,6 +476,11 @@ const json_var::array& json_var::to_array() const
 json_var::type json_var::get_type() const
 {
   return type_;
+}
+
+bool json_var::dirty() const
+{
+  return dirty_;
 }
 
 } // namespace server

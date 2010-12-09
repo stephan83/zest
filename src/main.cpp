@@ -74,12 +74,6 @@ int main(int argc, char* argv[])
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, cmdline_options), vm);
     po::notify(vm);
-    
-    std::ifstream ifs(config_file.c_str());
-    po::store(po::parse_config_file(ifs, config_file_options), vm);
-    po::notify(vm);
-    
-    ifs.close();
 
     if (vm.count("help")) {
         std::cout << cmdline_options << std::endl;
@@ -90,6 +84,15 @@ int main(int argc, char* argv[])
         std::cout << zest::version::version_string << std::endl;
         return 0;
     }
+    
+    std::ifstream ifs(config_file.c_str());
+    po::store(po::parse_config_file(ifs, config_file_options), vm);
+    po::notify(vm);
+    
+    // Initialize models.
+    a->define_models();
+    
+    ifs.close();
 
     // Block all signals for background thread.
     sigset_t new_mask;

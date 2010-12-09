@@ -42,7 +42,7 @@ void controller::handle_request(const request& req, json_var &params,
   
   rep.headers[1].name = "Content-Type";
   rep.headers[1].value = zest::server::mime_types::extension_to_type(
-    resp.format.str());
+    resp.format);
 }
 
 } // namespace server

@@ -9,7 +9,7 @@
 
 #include "local.hpp"
 #include "controllers/rate.hpp"
-
+#include <iostream>
 namespace zest {
 namespace server {
 
@@ -33,6 +33,20 @@ void local::map_routes(router_ptr r)
         ->add_param<std::string>("object", "[^/.]{1,255}")
         ->add_param<std::string>("format", "[a-z0-9]{3,5}"),
           ZEST_BIND_ACTION(rate_controller, show));
+}
+
+void local::define_models()
+{
+  model_ptr entity = model::define("entity")
+      ->primary_key("uid")
+      ->field<model::zset_field>("rates")
+      ->field<model::zset_field>("rated")
+  ;
+  
+  json_var test = entity->create("stephan");
+  test["rates"]["mix6355"] = .5f;
+  
+  std::cout << test.to_json() << '\n';
 }
 
 } // namespace server

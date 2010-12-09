@@ -16,6 +16,7 @@
 #include <boost/bind.hpp>
 #include "router.hpp"
 #include "controller.hpp"
+#include "model.hpp"
 
 namespace zest {
 namespace server {
@@ -28,6 +29,8 @@ public:
   virtual void add_options(boost::program_options::options_description &o) = 0;
   
   virtual void map_routes(router_ptr r) = 0;
+  
+  virtual void define_models() = 0;
   
 protected:
 

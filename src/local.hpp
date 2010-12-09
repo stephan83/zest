@@ -31,6 +31,8 @@ public:
   void add_options(boost::program_options::options_description &o);
 
   void map_routes(router_ptr r);
+  
+  void define_models();
     
 private:
 
