@@ -21,12 +21,13 @@
 #include "reply.hpp"
 #include "json_var.hpp"
 #include "response.hpp"
+#include "model.hpp"
 
 namespace zest {
 namespace server {
 
 typedef boost::function<void (const request& req, json_var &params,
-  response& response)> action;
+  response& response, model_map& models)> action;
 
 class controller
 {
@@ -40,7 +41,7 @@ public:
   action get_action(const std::string& name);
   
   void handle_request(const request& req, json_var &params, reply& rep,
-      const std::string& action_name);
+      const std::string& action_name, model_map& models);
     
 private:
 
@@ -54,7 +55,8 @@ typedef boost::shared_ptr<controller> controller_ptr;
 
 #define ZEST_ADD_ACTION(controller, action) \
   add_action(#action, boost::bind(&controller::action, shared_from_this(), \
-      _1, _2, _3));
+      _1, _2, _3, _4));
+     
 
 } // namespace server
 } // namespace zest

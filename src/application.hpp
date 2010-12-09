@@ -32,17 +32,26 @@ public:
   
   virtual void define_models() = 0;
   
+  void handle_request(const request& req, json_var &params,
+    reply& reply, const std::string& c, const std::string& a);
+  
 protected:
 
   void add_controller(const std::string& name, controller_ptr c);
   
   controller_ptr get_controller(const std::string& name);
+
+  void add_model(model_ptr m);
+  
+  model_ptr get_model(const std::string& name);
   
 private:
 
   typedef boost::unordered_map<std::string, controller_ptr> controller_map;
   
   controller_map controllers_;
+  
+  model_map models_;
   
 };
 
@@ -53,8 +62,8 @@ typedef boost::shared_ptr<application> application_ptr;
   get_controller(#name)->add_actions();
   
 #define ZEST_BIND_ACTION(controller_name, action) \
-  boost::bind(&controller::handle_request, get_controller(#controller_name), \
-    _1, _2, _3, #action)
+  boost::bind(&application::handle_request, this, \
+    _1, _2, _3, #controller_name, #action)
 
 } // namespace server
 } // namespace zest

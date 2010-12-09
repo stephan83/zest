@@ -156,6 +156,11 @@ public:
       }
     }
   }
+  
+  const std::string& name()
+  {
+    return name_;
+  }
 
 private:
 
@@ -184,6 +189,8 @@ private:
 };
 
 typedef boost::shared_ptr<model> model_ptr;
+
+typedef boost::unordered_map<std::string, model_ptr> model_map;
 
 } // namespace server
 } // namespace zest

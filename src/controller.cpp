@@ -24,13 +24,13 @@ action controller::get_action(const std::string& name)
 }
 
 void controller::handle_request(const request& req, json_var &params,
-  reply& rep, const std::string& action_name)
+  reply& rep, const std::string& action_name, model_map& models)
 {
   action a = get_action(action_name);
   response resp;
   
   
-  a(req, params, resp);
+  a(req, params, resp, models);
   
   rep.status = resp.status;
   

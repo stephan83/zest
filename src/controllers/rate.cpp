@@ -17,10 +17,14 @@ void rate_controller::add_actions()
 {
   ZEST_ADD_ACTION(rate_controller, show)
 }
-    
+
 void rate_controller::show(const request& req, json_var &params,
-  response& resp)
+  response& resp, model_map& models)
 {
+  //model_ptr entity = models("entity");
+  
+  //json_data = model_ptr->find(params["subject"].to_string());
+
   resp.status = reply::ok;
   resp.format = params["format"].to_string();
   

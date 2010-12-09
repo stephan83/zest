@@ -24,7 +24,8 @@ public:
   
   void add_actions();
   
-  void show(const request& req, json_var &params, response& resp);
+  void show(const request& req, json_var &params, response& resp, 
+      model_map& models);
   
 };
 
