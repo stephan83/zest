@@ -90,6 +90,12 @@ private:
     content
   } state_;
   
+  /// Current header name
+  std::string header_name_;
+  
+  /// Current header value
+  std::string header_value_;
+  
   /// Content length.
   size_t content_length_;
 };

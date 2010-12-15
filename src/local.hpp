@@ -33,6 +33,8 @@ public:
   void map_routes(router_ptr r);
   
   void define_models();
+  
+  void add_middlewares();
     
 private:
 

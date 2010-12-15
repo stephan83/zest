@@ -12,15 +12,12 @@
 #define ZEST_SERVER_HEADER_HPP
 
 #include <string>
+#include <boost/unordered_map.hpp>
 
 namespace zest {
 namespace server {
 
-struct header
-{
-  std::string name;
-  std::string value;
-};
+typedef boost::unordered_map <std::string, std::string> header_map;
 
 } // namespace server
 } // namespace zest

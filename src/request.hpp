@@ -25,7 +25,7 @@ struct request
   std::string uri;
   int http_version_major;
   int http_version_minor;
-  std::vector<header> headers;
+  header_map headers;
   std::string content;
 };
 

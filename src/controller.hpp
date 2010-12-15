@@ -22,6 +22,7 @@
 #include "json_var.hpp"
 #include "response.hpp"
 #include "model.hpp"
+#include "middleware.hpp"
 
 namespace zest {
 namespace server {
@@ -41,7 +42,8 @@ public:
   action get_action(const std::string& name);
   
   void handle_request(const request& req, json_var &params, reply& rep,
-      const std::string& action_name, model_map& models);
+      const std::string& action_name, model_map& models,
+        middleware_vec& middlewares);
     
 private:
 

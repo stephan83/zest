@@ -1,3 +1,7 @@
+* models
+* middlewares
+* template
 * set maximum request content length
+* time out
 * write tests
 * json parser?

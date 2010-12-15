@@ -32,10 +32,16 @@ model_ptr application::get_model(const std::string& name)
   return models_[name];
 }
 
+void application::add_middleware(middleware_ptr m)
+{
+  middlewares_.push_back(m);
+}
+
 void application::handle_request(const request& req, json_var &params,
     reply& reply, const std::string& c, const std::string& a)
 {
-  get_controller(c)->handle_request(req, params, reply, a, models_);
+  get_controller(c)->handle_request(req, params, reply, a, models_,
+      middlewares_);
 }
 
 } // namespace server

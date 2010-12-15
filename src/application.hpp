@@ -17,6 +17,7 @@
 #include "router.hpp"
 #include "controller.hpp"
 #include "model.hpp"
+#include "middleware.hpp"
 
 namespace zest {
 namespace server {
@@ -32,6 +33,8 @@ public:
   
   virtual void define_models() = 0;
   
+  virtual void add_middlewares() = 0;
+  
   void handle_request(const request& req, json_var &params,
     reply& reply, const std::string& c, const std::string& a);
   
@@ -44,6 +47,8 @@ protected:
   void add_model(model_ptr m);
   
   model_ptr get_model(const std::string& name);
+
+  void add_middleware(middleware_ptr m);
   
 private:
 
@@ -52,6 +57,8 @@ private:
   controller_map controllers_;
   
   model_map models_;
+  
+  middleware_vec middlewares_;
   
 };
 

@@ -213,8 +213,8 @@ boost::tribool request_parser::consume(request& req, char input)
     }
     else
     {
-      req.headers.push_back(header());
-      req.headers.back().name.push_back(input);
+      header_name_ = input;
+      header_value_.clear();
       state_ = header_name;
       return boost::indeterminate;
     }
@@ -235,7 +235,7 @@ boost::tribool request_parser::consume(request& req, char input)
     else
     {
       state_ = header_value;
-      req.headers.back().value.push_back(input);
+      header_value_.push_back(input);
       return boost::indeterminate;
     }
   case header_name:
@@ -250,7 +250,7 @@ boost::tribool request_parser::consume(request& req, char input)
     }
     else
     {
-      req.headers.back().name.push_back(input);
+      header_name_.push_back(input);
       return boost::indeterminate;
     }
   case space_before_header_value:
@@ -266,12 +266,14 @@ boost::tribool request_parser::consume(request& req, char input)
   case header_value:
     if (input == '\r')
     {
-      if(boost::iequals(req.headers.back().name, "content-length"))
+      if(boost::iequals(header_name_, "content-length"))
       {
         content_length_ =
-          boost::lexical_cast<size_t>(req.headers.back().value);
+          boost::lexical_cast<size_t>(header_value_);
         req.content.reserve(content_length_);
       }
+      
+      req.headers[header_name_] = header_value_;
       
       state_ = expecting_newline_2;
       return boost::indeterminate;
@@ -282,7 +284,7 @@ boost::tribool request_parser::consume(request& req, char input)
     }
     else
     {      
-      req.headers.back().value.push_back(input);
+      header_value_.push_back(input);
       return boost::indeterminate;
     }
   case expecting_newline_2:

@@ -44,7 +44,7 @@ struct reply
   } status;
 
   /// The headers to be included in the reply.
-  std::vector<header> headers;
+  header_map headers;
 
   /// The content to be sent in the reply.
   std::string content;

@@ -92,6 +92,9 @@ int main(int argc, char* argv[])
     // Initialize models.
     a->define_models();
     
+    // Initialize middlewares.
+    a->add_middlewares();
+    
     ifs.close();
 
     // Block all signals for background thread.

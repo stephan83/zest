@@ -9,6 +9,10 @@
 
 #include "local.hpp"
 #include "controllers/rate.hpp"
+#include "middlewares/date.hpp"
+#include "middlewares/gzip.hpp"
+#include "middlewares/server_info.hpp"
+#include "middlewares/extra_headers.hpp"
 #include <iostream>
 namespace zest {
 namespace server {
@@ -33,6 +37,12 @@ void local::map_routes(router_ptr r)
         ->add_param<std::string>("object", "[^/.]{1,255}")
         ->add_param<std::string>("format", "[a-z0-9]{3,5}"),
           ZEST_BIND_ACTION(rate_controller, show));
+          
+  r->post(zest::server::route::create("/:subject/rates/:object.:format")
+        ->add_param<std::string>("subject", "[^/.]{1,255}")
+        ->add_param<std::string>("object", "[^/.]{1,255}")
+        ->add_param<std::string>("format", "[a-z0-9]{3,5}"),
+          ZEST_BIND_ACTION(rate_controller, show));
 }
 
 void local::define_models()
@@ -47,6 +57,14 @@ void local::define_models()
   test["rates"]["mix6355"] = .5f;
   
   std::cout << test.to_json() << '\n';
+}
+
+void local::add_middlewares()
+{
+  add_middleware(middleware_ptr(new server_info_middleware()));
+  add_middleware(middleware_ptr(new date_middleware()));
+  add_middleware(middleware_ptr(new gzip_middleware()));
+  add_middleware(middleware_ptr(new extra_headers_middleware()));
 }
 
 } // namespace server
