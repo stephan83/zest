@@ -28,7 +28,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "fmacros.h"
+#include "fmacros.hpp"
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -43,7 +43,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "anet.h"
+#include "anet.hpp"
 
 static void anetSetError(char *err, const char *fmt, ...)
 {

@@ -7,6 +7,8 @@
 //
 //..............................................................................
 
+#include <boost/tokenizer.hpp>
+#include <boost/lexical_cast.hpp>
 #include "local.hpp"
 #include "controllers/rate.hpp"
 #include "middlewares/date.hpp"
@@ -47,14 +49,29 @@ void local::map_routes(router_ptr r)
 
 void local::define_models()
 {
-  model_ptr entity = model::define("entity")
+  redis_ = parse_redis_servers(redis_servers_);
+
+  model_ptr entity = model::define("entity", redis_)
       ->primary_key("uid")
       ->field<model::zset_field>("rates")
       ->field<model::zset_field>("rated")
   ;
   
-  json_var test = entity->create("stephan");
-  test["rates"]["mix6355"] = .5f;
+  json_var test = entity->load("stephan");
+  
+  /*
+  
+  json_var options(json_var::object_var);
+  
+  options["rated"] = json_var(json_var::null_var);
+  options["rates"] = json_var(json_var::object_var);
+  options["rates"]["order"] = "desc";
+  options["rates"]["start"] = 0;
+  options["rates"]["end"] = 10;
+  
+  json_var test = entity->load("stephan", options);
+  
+  */
   
   std::cout << test.to_json() << '\n';
 }
@@ -65,6 +82,33 @@ void local::add_middlewares()
   add_middleware(middleware_ptr(new date_middleware()));
   add_middleware(middleware_ptr(new gzip_middleware()));
   add_middleware(middleware_ptr(new extra_headers_middleware()));
+}
+
+redis_ptr local::parse_redis_servers(const std::string options) const
+{
+  std::vector<redis::connection_data> redis_servers;
+  
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  boost::char_separator<char> sep1(",");
+  boost::char_separator<char> sep2(":");
+  tokenizer tok1(options, sep1);
+  
+  for(tokenizer::iterator beg1 = tok1.begin(); beg1 != tok1.end(); ++beg1)
+  {
+    tokenizer tok2(*beg1, sep2);
+    
+    for(tokenizer::iterator beg2 = tok2.begin(); beg2 != tok2.end(); ++beg2)
+    {
+      redis::connection_data con;
+      con.host = *beg2;
+      con.port = boost::lexical_cast<uint16_t>(*++beg2);
+      con.dbindex = boost::lexical_cast<int>(*++beg2);
+      redis_servers.push_back(con);
+    }
+  }
+  
+  return redis_ptr(new redis::client(redis_servers.begin(),
+      redis_servers.end()));
 }
 
 } // namespace server

@@ -27,7 +27,7 @@ public:
   {
     string_var,
     int_var,
-    float_var,
+    double_var,
     bool_var,
     object_var,
     array_var,
@@ -47,7 +47,7 @@ public:
   
   explicit json_var(int value);
   
-  explicit json_var(float value);
+  explicit json_var(double value);
   
   explicit json_var(bool value);
   
@@ -61,13 +61,19 @@ public:
   
   std::string to_html() const;
   
+  int to_int() const;
+  
+  double to_double() const;
+  
+  bool to_bool() const;
+  
   json_var& operator=(const std::string& value);
   
   json_var& operator=(const char* value);
   
   json_var& operator=(int value);
   
-  json_var& operator=(float value);
+  json_var& operator=(double value);
   
   json_var& operator=(bool value);
   
@@ -92,6 +98,11 @@ public:
   type get_type() const;
   
   bool dirty() const;
+  
+  object::iterator begin();
+  object::iterator end();
+  object::const_iterator begin() const;
+  object::const_iterator end() const;
   
 private:
 

@@ -55,7 +55,7 @@
 #include <boost/optional.hpp>
 #include <boost/variant.hpp>
 
-#include "anet.h"
+#include "anet.hpp"
 
 #define REDIS_LBR                       "\r\n"
 #define REDIS_STATUS_REPLY_OK           "OK"

@@ -38,7 +38,11 @@ public:
     
 private:
 
+  redis_ptr parse_redis_servers(const std::string options) const;
+
   std::string redis_servers_;
+  
+  redis_ptr redis_;
   
 };
 

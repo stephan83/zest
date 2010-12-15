@@ -38,7 +38,7 @@ json_var::json_var(type t)
     case int_var:
     value_ = 0;
     break;
-    case float_var:
+    case double_var:
     value_ = .0f;
     break;
     case bool_var:
@@ -79,11 +79,11 @@ json_var::json_var(int value)
   type_ = int_var;
 }
 
-json_var::json_var(float value)
+json_var::json_var(double value)
   : dirty_(false)
 {
   value_ = value;
-  type_ = float_var;
+  type_ = double_var;
 }
 
 json_var::json_var(bool value)
@@ -133,10 +133,10 @@ std::string json_var::to_json() const
       *boost::any_cast<int>(&value_));
     return result;
   }
-  else if(type_ == float_var)
+  else if(type_ == double_var)
   {
     std::string result = boost::lexical_cast<std::string>(
-      *boost::any_cast<float>(&value_));
+      *boost::any_cast<double>(&value_));
     return result;
   }
   else if(type_ == bool_var)
@@ -218,10 +218,10 @@ std::string json_var::to_html() const
       *boost::any_cast<int>(&value_));
     return result;
   }
-  else if(type_ == float_var)
+  else if(type_ == double_var)
   {
     std::string result = boost::lexical_cast<std::string>(
-      *boost::any_cast<float>(&value_));
+      *boost::any_cast<double>(&value_));
     return result;
   }
   else if(type_ == bool_var)
@@ -282,6 +282,36 @@ std::string json_var::to_html() const
   }
 }
 
+int json_var::to_int() const
+{
+  if(type_ == int_var)
+  {
+    return *boost::any_cast<int>(&value_);
+  }
+  
+  return 0;
+}
+
+double json_var::to_double() const
+{
+  if(type_ == double_var)
+  {
+    return *boost::any_cast<double>(&value_);
+  }
+  
+  return .0f;
+}
+
+bool json_var::to_bool() const
+{
+  if(type_ == bool_var)
+  {
+    return *boost::any_cast<bool>(&value_);
+  }
+  
+  return false;
+}
+
 json_var& json_var::operator=(const std::string& value)
 {
   if(this != &nil)
@@ -315,12 +345,12 @@ json_var& json_var::operator=(int value)
   return *this;
 }
 
-json_var& json_var::operator=(float value)
+json_var& json_var::operator=(double value)
 {
   if(this != &nil)
   {
     value_ = value;
-    type_ = float_var;
+    type_ = double_var;
     dirty_ = true;
   }
   return *this;
@@ -482,6 +512,27 @@ bool json_var::dirty() const
 {
   return dirty_;
 }
+
+json_var::object::iterator json_var::begin()
+{
+  return to_object().begin();
+}
+
+json_var::object::iterator json_var::end()
+{
+  return to_object().end();
+}
+
+json_var::object::const_iterator json_var::begin() const
+{
+  return to_object().begin();
+}
+
+json_var::object::const_iterator json_var::end() const
+{
+  return to_object().end();
+}
+
 
 } // namespace server
 } // namespace zest
