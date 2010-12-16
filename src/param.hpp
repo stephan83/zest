@@ -24,11 +24,15 @@ namespace server {
 
 typedef boost::variant< int, float, bool, std::string > param_value;
 
+///
+/// Base class used by URL param options.
+///
 class param_option
 {
 
 public:
 
+  /// Constructors.
   param_option()
   {
   }
@@ -38,11 +42,13 @@ public:
     pattern_ = p;
   }
   
+  /// Cast a string to a value.
   virtual void cast(const std::string& in, json_var& out) const
   {
     out = in;
   }
   
+  /// Regex pattern.
   const std::string& pattern() const
   {
     return pattern_;
@@ -50,10 +56,14 @@ public:
   
 protected:
 
+  /// Regex pattern.
   std::string pattern_;
   
 };
 
+///
+/// Typed URL param option.
+///
 template <typename Type>
 class typed_param_option : public param_option
 {

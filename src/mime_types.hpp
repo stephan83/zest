@@ -8,6 +8,12 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
+///
+/// Modified by Stephan Florquin:
+/// * Added JSON/XML formats
+/// * Added UTF-8 charset to HTML (should really be elsewhere)
+///
+
 #ifndef ZEST_SERVER_MIME_TYPES_HPP
 #define ZEST_SERVER_MIME_TYPES_HPP
 

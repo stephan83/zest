@@ -26,6 +26,9 @@ namespace server {
 typedef boost::function<void (const request& req, json_var &params,
   reply& rep)> router_func;
 
+///
+/// The Zest URL router.
+///
 class router
   : public boost::enable_shared_from_this<router>
 {
@@ -54,13 +57,11 @@ private:
   typedef std::vector<mapped_route> route_vec;
   
   typedef route_vec::iterator route_itr;
-  
+
+  /// Vectors of routes by request types.  
   route_vec gets_;
-  
   route_vec posts_;
-  
   route_vec puts_;
-  
   route_vec dels_;
   
 };

@@ -27,20 +27,28 @@
 namespace zest {
 namespace server {
 
+/// An action is simply a function pointer.
 typedef boost::function<void (const request& req, json_var &params,
   response& response, model_map& models)> action;
 
+///
+/// Base class used by controllers.
+///
 class controller
 {
 
 public:
 
+  /// Register actions.
   virtual void add_actions() = 0;
 
+  /// Register an action.
   void add_action(const std::string& name, action a);
   
+  /// Return an action by name.
   action get_action(const std::string& name);
   
+  /// Handle an HTTP request.
   void handle_request(const request& req, json_var &params, reply& rep,
       const std::string& action_name, model_map& models,
         middleware_vec& middlewares);
@@ -49,12 +57,14 @@ private:
 
   typedef boost::unordered_map<std::string, action> action_map;
   
+  /// Hashtable of actions.
   action_map actions_;
   
 };
 
 typedef boost::shared_ptr<controller> controller_ptr;
 
+/// Macro to simplify registering a controller.
 #define ZEST_ADD_ACTION(controller, action) \
   add_action(#action, boost::bind(&controller::action, shared_from_this(), \
       _1, _2, _3, _4));

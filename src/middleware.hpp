@@ -19,17 +19,22 @@
 namespace zest {
 namespace server {
 
+///
+/// Base class used by middlewares.
+///
 class middleware
 {
 
 public:
   
+  /// Do something before an action is called.
   virtual void before_action(const request& req, json_var &params,
     reply& repl, response& resp)
   {
   
   }
   
+  /// Do something after an action is called.
   virtual void after_action(const request& req, json_var &params,
     reply& repl, response& resp)
   {

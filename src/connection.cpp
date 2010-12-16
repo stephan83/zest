@@ -16,11 +16,13 @@ namespace zest {
 namespace server {
 
 connection::connection(boost::asio::io_service& io_service,
-    router_ptr& r)
+    router_ptr& r, connection_closed_func closed_handler)
   : strand_(io_service),
     socket_(io_service),
-    router_(r)
+    router_(r),
+    closed_handler_(closed_handler)
 {
+
 }
 
 boost::asio::ip::tcp::socket& connection::socket()
@@ -86,6 +88,8 @@ void connection::handle_write(const boost::system::error_code& e)
     boost::system::error_code ignored_ec;
     socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
   }
+  
+  closed_handler_();
 
   // No new asynchronous operations are started. This means that all shared_ptr
   // references to the connection object will disappear and the object will be

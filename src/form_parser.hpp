@@ -19,10 +19,14 @@ namespace server {
 
 struct request;
 
-/// Parser for www-form-urlencoded content.
+///
+/// Parser for www-form-urlencoded content. Used request_parser as an starting
+/// point.
+///
 class form_parser
 {
 public:
+
   /// Construct ready to parse the form data.
   form_parser();
 
@@ -49,12 +53,14 @@ public:
   }
 
 private:
+
   /// Handle the next character of input.
   boost::tribool consume(json_var& variable, char input);
 
-  /// Check if a byte is an HTTP character.
+  /// Check if a byte is a character.
   static bool is_char(int c);
 
+  /// Check if a byte is special.
   static bool is_tspecial(int c);
 
   /// Check if a byte is a digit.

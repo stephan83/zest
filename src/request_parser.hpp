@@ -8,6 +8,13 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
+///
+/// Modified by Stephan Florquin:
+///
+/// * Made headers a hashtable for convenience.
+/// * Parse body.
+///
+
 #ifndef ZEST_SERVER_REQUEST_PARSER_HPP
 #define ZEST_SERVER_REQUEST_PARSER_HPP
 

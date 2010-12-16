@@ -30,15 +30,15 @@ int main(int argc, char* argv[])
 {
   try
   {
-    // Declare the supported options.
     
+    // Create application.
+    zest::server::application_ptr a(new zest::server::local());
+    
+    // Declare the supported options.
     std::string config_file;
     std::string address;
     std::string port;
     unsigned int threads;
-    
-    // Create application.
-    zest::server::application_ptr a(new zest::server::local());
     
     namespace po = boost::program_options;
     
@@ -63,6 +63,7 @@ int main(int argc, char* argv[])
     
     po::options_description application("Application");
     
+    // Let application register its options.
     a->add_options(application);
     
     po::options_description cmdline_options;
@@ -85,17 +86,17 @@ int main(int argc, char* argv[])
         return 0;
     }
     
+    // Load config file.
     std::ifstream ifs(config_file.c_str());
     po::store(po::parse_config_file(ifs, config_file_options), vm);
     po::notify(vm);
+    ifs.close();
     
     // Initialize models.
     a->define_models();
     
     // Initialize middlewares.
     a->add_middlewares();
-    
-    ifs.close();
 
     // Block all signals for background thread.
     sigset_t new_mask;

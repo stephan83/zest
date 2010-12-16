@@ -17,10 +17,18 @@
 namespace zest {
 namespace server {
 
+///
+/// Sort of a higher level HTTP reply, used by controller actions.
+///
 struct response
 {
+  /// Response status code.
   reply::status_type status;
+  
+  /// Response format (mime type).
   std::string format;
+  
+  /// Output stream.
   boost::iostreams::filtering_ostream content;
 };
 

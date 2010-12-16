@@ -8,6 +8,13 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
+///
+/// Modified by Stephan Florquin:
+///
+/// * Hooked up Zest router.
+/// * Tracking concurrent connections.
+///
+
 #ifndef ZEST_SERVER_SERVER_HPP
 #define ZEST_SERVER_SERVER_HPP
 
@@ -40,6 +47,9 @@ public:
 private:
   /// Handle completion of an asynchronous accept operation.
   void handle_accept(const boost::system::error_code& e);
+  
+  /// Handle termination of a connection.
+  void connection_closed_handler();
 
   /// The number of threads that will call io_service::run().
   std::size_t thread_pool_size_;
@@ -50,10 +60,14 @@ private:
   /// Acceptor used to listen for incoming connections.
   boost::asio::ip::tcp::acceptor acceptor_;
 
+  /// The URL router to map routes.
   router_ptr router_;
 
   /// The next connection to be accepted.
   connection_ptr new_connection_;
+  
+  /// Number of concurrent connections.
+  unsigned int num_connections_;
 };
 
 } // namespace server

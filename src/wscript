@@ -5,7 +5,7 @@ def build(bld):
   bld.objects(
     source            = 'anet.cpp application.cpp connection.cpp controller.cpp form_parser.cpp json_var.cpp local.cpp mime_types.cpp reply.cpp router.cpp route.cpp request_parser.cpp server.cpp utils.cpp controllers/rate.cpp',
     includes          = '.',
-    cxxflags          = '-O3 -Wall',
+    cxxflags          = '-O3 -Wall -march=native',
     target            = 'CXX_OBJS'
   )
   bld.program(

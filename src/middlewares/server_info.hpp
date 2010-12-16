@@ -17,6 +17,9 @@
 namespace zest {
 namespace server {
 
+///
+/// Adds server info headers to the response.
+///
 class server_info_middleware
   : public middleware
 {

@@ -16,6 +16,9 @@
 #include <boost/iostreams/filtering_stream.hpp>
 #include "../middleware.hpp"
 
+///
+/// Enables gzip compression.
+///
 namespace zest {
 namespace server {
 
@@ -46,7 +49,7 @@ public:
   
 private:
 
-  /// Returns whether a client accepts gzip compression.
+  /// Return whether a client accepts gzip compression.
   static bool accepts_gzip(const request& req)
   {
     header_map::const_iterator itr = req.headers.find("Accept-Encoding");

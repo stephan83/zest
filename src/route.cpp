@@ -21,6 +21,8 @@ route::route(const std::string& path)
   
   path_with_params_ = regex_replace(path, esc, "\\\\\\1&", boost::match_default
     | boost::format_sed);
+    
+  regex_ = boost::regex(path_with_params_);
 }
 
 route_ptr route::create(const std::string& path)
@@ -30,11 +32,9 @@ route_ptr route::create(const std::string& path)
 
 bool route::match(const std::string& path, json_var& object)
 {
-  boost::regex e(path_with_params_);
-  
   boost::smatch values;
   
-  bool result = boost::regex_match(path, values, e,
+  bool result = boost::regex_match(path, values, regex_,
       boost::match_extra);
   
   if(result)

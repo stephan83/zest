@@ -15,13 +15,18 @@
 namespace zest {
 namespace server {
 
+///
+/// Useful functions.
+///
 class utils
 {
 
 public:
 
+  /// Decode a URL.
   static bool url_decode(const std::string& in, std::string& out);
   
+  /// Escape double quotes.
   static std::string escape(const std::string& in);
 
 };

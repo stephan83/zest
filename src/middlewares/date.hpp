@@ -21,6 +21,9 @@
 namespace zest {
 namespace server {
 
+///
+/// Adds a repsonse header with the date/time the repsonse was sent.
+///
 class date_middleware
   : public middleware
 {

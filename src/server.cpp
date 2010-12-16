@@ -22,7 +22,9 @@ server::server(const std::string& address, const std::string& port,
   : thread_pool_size_(thread_pool_size),
     acceptor_(io_service_),
     router_(r),
-    new_connection_(new connection(io_service_, r))
+    new_connection_(new connection(io_service_, r,
+        boost::bind(&server::connection_closed_handler, this))),
+    num_connections_(0)
 {
   // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
   boost::asio::ip::tcp::resolver resolver(io_service_);
@@ -62,12 +64,20 @@ void server::handle_accept(const boost::system::error_code& e)
 {
   if (!e)
   {
+    ++num_connections_;
+    
     new_connection_->start();
-    new_connection_.reset(new connection(io_service_, router_));
+    new_connection_.reset(new connection(io_service_, router_,
+        boost::bind(&server::connection_closed_handler, this)));
     acceptor_.async_accept(new_connection_->socket(),
         boost::bind(&server::handle_accept, this,
           boost::asio::placeholders::error));
   }
+}
+
+void server::connection_closed_handler()
+{
+  --num_connections_;
 }
 
 } // namespace server
