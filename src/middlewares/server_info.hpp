@@ -30,7 +30,7 @@ public:
     reply& repl, response& resp)
   {
     repl.headers["Server"] = "zest";
-    repl.headers["X-Powered-By"] = "Vitamin C";
+    repl.headers["X-Powered-By"] = "lulz";
   }
   
 };

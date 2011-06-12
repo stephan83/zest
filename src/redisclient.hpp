@@ -2839,6 +2839,7 @@ namespace redis
   typedef distributed_base_int<uint>            distributed_uint;
   
   typedef distributed_base_int<long>            distributed_long;
+  typedef unsigned long ulong;
   typedef distributed_base_int<ulong>           distributed_ulong;
 
   // TODO: lexical_cast treats int8_t/uint8_t as char/uchar

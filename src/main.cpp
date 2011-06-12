@@ -21,10 +21,22 @@
 #include "route.hpp"
 #include "local.hpp"
 
+// include log4cxx header files.
+#include <log4cxx/logger.h>
+#include <log4cxx/basicconfigurator.h>
+#include <log4cxx/propertyconfigurator.h>
+#include <log4cxx/helpers/exception.h>
+
 #if !defined(_WIN32)
 
 #include <pthread.h>
 #include <signal.h>
+
+using namespace log4cxx;
+using namespace log4cxx::helpers;
+
+// Root logger.
+LoggerPtr logger(Logger::getLogger("application"));
 
 int main(int argc, char* argv[])
 {
@@ -36,6 +48,7 @@ int main(int argc, char* argv[])
     
     // Declare the supported options.
     std::string config_file;
+    std::string log_config_file;
     std::string address;
     std::string port;
     unsigned int threads;
@@ -47,12 +60,15 @@ int main(int argc, char* argv[])
         ("version,v", "print version string")
         ("help,h", "produce help message")
         ("config-file,c", po::value<std::string>(&config_file)
-            ->default_value("/usr/local/etc/zest.conf"),
+            ->default_value("/usr/local/etc/zest/zest.conf"),
               "set configuration file")
     ;
     
     po::options_description config("Configuration");
     config.add_options()
+        ("log-config-file,l", po::value<std::string>(&log_config_file)
+            ->default_value("/usr/local/etc/zest/log.conf"), 
+              "set log config file")
         ("address,a", po::value<std::string>(&address)
             ->default_value("0.0.0.0"), "set server address")
         ("port,p", po::value<std::string>(&port)
@@ -92,6 +108,14 @@ int main(int argc, char* argv[])
     po::notify(vm);
     ifs.close();
     
+    std::cout << log_config_file << std::endl;
+    
+    // Load log config file.
+    PropertyConfigurator::configure(log_config_file);
+    
+    LOG4CXX_INFO(logger,
+        "Starting server on " << address << ":" << port << ".");
+    
     // Initialize models.
     a->define_models();
     
@@ -129,6 +153,9 @@ int main(int argc, char* argv[])
     // Stop the server.
     s.stop();
     t.join();
+    
+    LOG4CXX_INFO(logger,
+        "Stoping server on " << address << ":" << port << ".");
   }
   catch (std::exception& e)
   {

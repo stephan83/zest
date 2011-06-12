@@ -18,6 +18,7 @@
 #include "redisclient.hpp"
 #include "json_var.hpp"
 #include <iostream>
+
 namespace zest {
 namespace server {
 

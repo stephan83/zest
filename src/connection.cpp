@@ -15,6 +15,10 @@
 namespace zest {
 namespace server {
 
+using namespace log4cxx;
+
+LoggerPtr connection::access_logger_(Logger::getLogger("access"));
+
 connection::connection(boost::asio::io_service& io_service,
     router_ptr& r, connection_closed_func closed_handler)
   : strand_(io_service),
@@ -50,6 +54,8 @@ void connection::handle_read(const boost::system::error_code& e,
 
     if (result)
     {
+      LOG4CXX_INFO(access_logger_,
+          '"' << request_.method << ' ' << request_.uri << '"');
       router_->process(request_, reply_);
       boost::asio::async_write(socket_, reply_.to_buffers(),
           strand_.wrap(

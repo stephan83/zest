@@ -15,6 +15,7 @@
 /// * Added a callback when a connection is closed.
 /// * Could add KeepAlive support, by is it worth it if it won't server static
 ///   files?
+/// * Added log4cxx
 ///
 
 #ifndef ZEST_SERVER_CONNECTION_HPP
@@ -25,6 +26,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <log4cxx/logger.h>
 #include "reply.hpp"
 #include "request.hpp"
 #include "router.hpp"
@@ -61,6 +63,9 @@ private:
 
   /// Handle completion of a write operation.
   void handle_write(const boost::system::error_code& e);
+  
+  /// Access logger.
+  static log4cxx::LoggerPtr access_logger_;
 
   /// Strand to ensure the connection's handlers are not called concurrently.
   boost::asio::io_service::strand strand_;

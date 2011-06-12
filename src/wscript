@@ -5,7 +5,7 @@ def build(bld):
   bld.objects(
     source            = 'anet.cpp application.cpp connection.cpp controller.cpp form_parser.cpp json_var.cpp local.cpp mime_types.cpp reply.cpp router.cpp route.cpp request_parser.cpp server.cpp utils.cpp controllers/rate.cpp',
     includes          = '.',
-    cxxflags          = '-O3 -Wall -march=native',
+    cxxflags          = '-O3 -Wall',
     target            = 'CXX_OBJS'
   )
   bld.program(
@@ -14,7 +14,7 @@ def build(bld):
     target            = '../zest',
     vnum              = '0.0.1',
     lib               = 'z',
-    use               = 'PTHREAD BOOST BOOST_IOSTREAMS BOOST_DATE_TIME BOOST_FILESYSTEM BOOST_LOG '
+    use               = 'PTHREAD LOG4CXX BOOST BOOST_IOSTREAMS BOOST_DATE_TIME BOOST_FILESYSTEM'
                       + 'BOOST_PROGRAM_OPTIONS BOOST_REGEX '
                       + 'BOOST_SERIALIZATION BOOST_SYSTEM BOOST_THREAD BOOST_THREAD_MT CXX_OBJS',
     cxxflags          = '-O3 -Wall'
