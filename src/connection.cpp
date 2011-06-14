@@ -54,8 +54,13 @@ void connection::handle_read(const boost::system::error_code& e,
 
     if (result)
     {
-      LOG4CXX_INFO(access_logger_,
-          '"' << request_.method << ' ' << request_.uri << '"');
+      boost::asio::ip::tcp::endpoint remote_endpoint =
+          socket_.remote_endpoint();
+      
+      LOG4CXX_INFO(access_logger_, 
+          remote_endpoint.address() << ':' << remote_endpoint.port()
+          << " \"" << request_.method << ' ' << request_.uri << '"');
+      
       router_->process(request_, reply_);
       boost::asio::async_write(socket_, reply_.to_buffers(),
           strand_.wrap(
