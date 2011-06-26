@@ -10,6 +10,7 @@
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 #include "local.hpp"
+#include "controllers/home.hpp"
 #include "controllers/rate.hpp"
 #include "middlewares/date.hpp"
 #include "middlewares/gzip.hpp"
@@ -21,6 +22,7 @@ namespace server {
 
 local::local()
 {
+  ZEST_ADD_CONTROLLER(home_controller)
   ZEST_ADD_CONTROLLER(rate_controller)
 }
 
@@ -34,6 +36,9 @@ void local::add_options(boost::program_options::options_description &o)
 
 void local::map_routes(router_ptr r)
 {
+  r->get(zest::server::route::create("/"),
+         ZEST_BIND_ACTION(home_controller, index));
+  
   r->get(zest::server::route::create("/:subject/rates/:object.:format")
         ->add_param<std::string>("subject", "[^/.]{1,255}")
         ->add_param<std::string>("object", "[^/.]{1,255}")
@@ -80,7 +85,7 @@ void local::add_middlewares()
 {
   add_middleware(middleware_ptr(new server_info_middleware()));
   add_middleware(middleware_ptr(new date_middleware()));
-  add_middleware(middleware_ptr(new gzip_middleware()));
+  //add_middleware(middleware_ptr(new gzip_middleware()));
   add_middleware(middleware_ptr(new extra_headers_middleware()));
 }
 

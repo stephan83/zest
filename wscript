@@ -6,7 +6,7 @@ def configure(conf):
   conf.load('compiler_cxx')
   conf.check(
     features          = 'cxx cxxprogram',
-    cxxflags          = '-O3 -Wall'
+    cxxflags          = '-O3 -Wall -mmacosx-version-min=10.5'
   )
   conf.check(
     lib               = 'pthread',
@@ -20,8 +20,9 @@ def configure(conf):
   conf.check_boost(
     lib               = 'date_time filesystem iostreams program_options regex '
                       + 'serialization system thread',
-    static            = 'onlystatic'
+    static            = True
   )
+  conf.env.append_unique('LINKFLAGS', ['-static -mmacosx-version-min=10.5']) 
 
 def build(bld):
   bld.recurse('src')

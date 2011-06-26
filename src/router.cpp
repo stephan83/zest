@@ -56,6 +56,7 @@ void router::process(const request& req, reply& rep)
     if(!result)
     {
       reply _rep = reply::stock_reply(reply::bad_request);
+      rep.status = _rep.status;
       rep.headers = _rep.headers;
       rep.content = _rep.content;
       return;
@@ -76,6 +77,7 @@ void router::process(const request& req, reply& rep)
     if(!result)
     {
       reply _rep = reply::stock_reply(reply::bad_request);
+      rep.status = _rep.status;
       rep.headers = _rep.headers;
       rep.content = _rep.content;
       return;
@@ -115,12 +117,15 @@ void router::process(const request& req, reply& rep)
       
       //std::cout << params.to_json() << '\n';
       return;
+      
+      
     }
     ++itr;
   }
   
   // Didn't find a matching pattern.
   reply _rep = reply::stock_reply(reply::not_found);
+  rep.status = _rep.status;
   rep.headers = _rep.headers;
   rep.content = _rep.content;
 }
