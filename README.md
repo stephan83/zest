@@ -8,6 +8,8 @@ Work In Progress.
 * GZIP compression
 * Controllers
 * Basic form parser
+* json_var, for easy manipulation of JSON-like data
+* Simple middleware engine
 
 ### TODO
 
