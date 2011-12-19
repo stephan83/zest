@@ -62,6 +62,7 @@ void local::define_models()
       ->field<model::zset_field>("rated")
   ;
   
+  // return a json_var container instead
   json_var test = entity->load("stephan");
   
   /*
